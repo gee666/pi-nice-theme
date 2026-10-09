@@ -1,0 +1,27 @@
+{
+  "name": "pi-trans-theme",
+  "version": "1.0.0",
+  "description": "Static Pi theme using the pi-a-theme README example palette.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gee666/pi-trans-theme.git"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-theme"
+  ],
+  "files": [
+    "themes",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "pi": {
+    "themes": [
+      "./themes/trans-theme.json"
+    ]
+  }
+}
