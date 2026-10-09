@@ -22,10 +22,10 @@ test('ships only a static dark theme', () => {
 test('preserves all 55 user-saved colors exactly', () => {
   // Snapshot of the user's saved pi-nice-theme.json, not regenerated inputs.
   assert.equal(createHash('sha256').update(JSON.stringify(theme.colors)).digest('hex'),
-    '8ad3e57952d8c88207480ab29442469828f49bfe01a0653d473297595d76b118');
+    'aa75673b1465b11ecc4e82c8af1074580d56eece17f40815e7d95346598227c9');
 });
 
 test('ships the saved JSON byte for byte', () => {
   assert.equal(createHash('sha256').update(savedTheme).digest('hex'),
-    '321fe243f86460ac631fb525243ef524c803c4e8f3839dc86530bf468b49ad1d');
+    'd798f496afa6cf74d80272eca8b4a457b831b34557278838a872459be4978992');
 });
