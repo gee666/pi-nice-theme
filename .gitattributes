@@ -1,0 +1,2 @@
+# Keep the saved JSON snapshot identical in Windows and WSL checkouts.
+themes/*.json text eol=lf

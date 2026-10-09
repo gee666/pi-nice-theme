@@ -1,11 +1,11 @@
 {
-  "name": "pi-trans-theme",
-  "version": "1.0.0",
-  "description": "Static Pi theme using the pi-a-theme README example palette.",
+  "name": "pi-nice-theme",
+  "version": "1.1.0",
+  "description": "Static Pi theme with the exact user-saved pi-nice-theme palette.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gee666/pi-trans-theme.git"
+    "url": "https://github.com/gee666/pi-nice-theme.git"
   },
   "keywords": [
     "pi-package",
@@ -21,7 +21,7 @@
   },
   "pi": {
     "themes": [
-      "./themes/trans-theme.json"
+      "./themes/pi-nice-theme.json"
     ]
   }
 }
