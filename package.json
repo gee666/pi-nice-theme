@@ -1,6 +1,6 @@
 {
   "name": "pi-nice-theme",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Static Pi theme with the exact user-saved pi-nice-theme palette.",
   "license": "MIT",
   "repository": {
@@ -20,8 +20,9 @@
     "pretest": "npm run test:pi",
     "test": "npm run test:unit",
     "test:unit": "node --test",
-    "test:pi": "node scripts/validate-pi.mjs",
-    "check": "node --check scripts/validate-pi.mjs && node --check tests/theme.test.mjs"
+    "test:pi": "npm run test:e2e",
+    "test:e2e": "node scripts/validate-pi.mjs",
+    "check": "node --check scripts/validate-pi.mjs && node --check tests/theme.test.mjs && python3 -c \"import ast; ast.parse(open('tests/cli-driver.py').read())\""
   },
   "pi": {
     "themes": [

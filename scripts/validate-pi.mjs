@@ -1,42 +1,40 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-// npm provides its CLI path on every supported platform, including Windows.
-// Run it through Node with explicit arguments, without a shell.
-const npmCli = process.env.npm_execpath;
-assert.ok(npmCli, 'Run this validator with npm run test:pi');
-const prefix = new URL('../tmp/pi-validation/', import.meta.url);
-mkdirSync(prefix, { recursive: true });
-execFileSync(process.execPath, [
-  npmCli, 'install', '--prefix', fileURLToPath(prefix),
-  '--no-save', '--package-lock=false', '--ignore-scripts',
-  '@earendil-works/pi-coding-agent@latest',
-], { stdio: 'inherit', timeout: 180000 });
+// Exercise the supplied runtime, never install or substitute a second Pi.
+const bin = process.env.PI_EVERGREEN_PI_BIN;
+assert.ok(bin, 'PI_EVERGREEN_PI_BIN must point to the installed global Pi executable');
+const root = fileURLToPath(new URL('../', import.meta.url));
+const version = execFileSync(bin, ['--version'], { encoding: 'utf8', timeout: 30000 }).trim();
+const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+assert.ok(readme.includes(`Tested against Pi ${version}`), `Update README after testing Pi ${version}`);
+mkdirSync(new URL('../tmp/', import.meta.url), { recursive: true });
+const work = mkdtempSync(fileURLToPath(new URL('../tmp/cli-test-', import.meta.url)));
+try {
+  const theme = JSON.parse(readFileSync(new URL('../themes/pi-nice-theme.json', import.meta.url)));
+  const invalid = `${work}/invalid`;
+  mkdirSync(invalid);
+  for (const [name, json] of Object.entries({
+    'missing-colors': { ...theme, colors: {} },
+    'unknown-token': { ...theme, colors: { ...theme.colors, evergreenUnknown: '#FFFFFF' } },
+    'unknown-field': { ...theme, evergreenUnknown: true },
+    'invalid-color': { ...theme, colors: { ...theme.colors, text: 'not-a-variable' } },
+  })) writeFileSync(`${invalid}/${name}.json`, JSON.stringify({ ...json, name }));
 
-const piRoot = new URL('node_modules/@earendil-works/pi-coding-agent/', prefix);
-const installed = JSON.parse(readFileSync(new URL('package.json', piRoot), 'utf8'));
-const latest = execFileSync(process.execPath,
-  [npmCli, 'view', '@earendil-works/pi-coding-agent@latest', 'version'],
-  { encoding: 'utf8', timeout: 30000 }).trim();
-assert.equal(installed.version, latest, 'Installed Pi does not match the latest npm release');
-// These internal validation entry points intentionally track the latest Pi.
-const { validateThemeJson } = await import(new URL('dist/modes/interactive/theme/theme-schema.js', piRoot));
-const { loadThemeFromPath, setThemeJsonValidator } = await import(new URL('dist/modes/interactive/theme/theme.js', piRoot));
-setThemeJsonValidator(validateThemeJson);
-
-function checkTheme(path) {
-  const json = JSON.parse(readFileSync(path, 'utf8'));
-  validateThemeJson(path, json);
-  assert.throws(() => validateThemeJson('invalid', { ...json, colors: {} }));
-  const theme = loadThemeFromPath(path);
-  assert.equal(theme.name, json.name);
-  assert.equal(typeof theme.fg('text', 'validation'), 'string');
-  assert.equal(typeof theme.bg('userMessageBg', 'validation'), 'string');
-  console.log(`Pi ${installed.version}: schema and loader passed for ${json.name}`);
+  const config = {
+    bin, root, work, invalid, expected: theme,
+    observer: `${root}tests/fixtures/theme-observer.ts`,
+    provider: process.env.PI_EVERGREEN_E2E_PROVIDER || 'openai',
+    model: process.env.PI_EVERGREEN_E2E_MODEL || 'gpt-6-luna',
+    reasoning: process.env.PI_EVERGREEN_E2E_REASONING || 'medium',
+  };
+  writeFileSync(`${work}/config.json`, JSON.stringify(config));
+  execFileSync('python3', [`${root}tests/cli-driver.py`, `${work}/config.json`], {
+    stdio: 'inherit', timeout: 180000,
+  });
+  console.log(`Pi ${version}: real CLI theme discovery, rendering, validation and lifecycle passed`);
+} finally {
+  rmSync(work, { recursive: true, force: true });
 }
-
-const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-assert.equal(pkg.pi.themes.length, 1);
-for (const file of pkg.pi.themes) checkTheme(fileURLToPath(new URL(`../${file}`, import.meta.url)));

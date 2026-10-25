@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
@@ -15,6 +17,7 @@ test('ships only a static dark theme', () => {
   assert.deepEqual(pkg.pi, { themes: ['./themes/pi-nice-theme.json'] });
   assert.deepEqual(Object.keys(theme).sort(), ['appearance', 'colors', 'name']);
   assert.equal(pkg.dependencies, undefined);
+  assert.deepEqual(pkg.files, ['themes', 'README.md', 'LICENSE']);
   assert.equal(Object.keys(theme.colors).length, 55);
   for (const color of Object.values(theme.colors)) assert.match(color, /^#[0-9A-F]{6}$/);
 });
@@ -23,6 +26,18 @@ test('preserves all 55 user-saved colors exactly', () => {
   // Snapshot of the user's saved pi-nice-theme.json, not regenerated inputs.
   assert.equal(createHash('sha256').update(JSON.stringify(theme.colors)).digest('hex'),
     'aa75673b1465b11ecc4e82c8af1074580d56eece17f40815e7d95346598227c9');
+});
+
+test('tarball contains only the static theme and package documentation', () => {
+  assert.ok(process.env.npm_execpath, 'Run through npm run test:unit');
+  const root = fileURLToPath(new URL('../', import.meta.url));
+  const [packed] = JSON.parse(execFileSync(process.execPath, [
+    process.env.npm_execpath, 'pack', '--dry-run', '--json', '--ignore-scripts',
+    '--cache', `${root}tmp/npm-cache`,
+  ], { cwd: root, encoding: 'utf8', timeout: 30000 }));
+  assert.deepEqual(packed.files.map(({ path }) => path).sort(), [
+    'LICENSE', 'README.md', 'package.json', 'themes/pi-nice-theme.json',
+  ]);
 });
 
 test('ships the saved JSON byte for byte', () => {

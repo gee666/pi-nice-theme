@@ -41,10 +41,11 @@ The file does not contain the browser's generator inputs or preview background, 
 ## Test
 
 ```sh
-npm test
+PI_EVERGREEN_PI_BIN=/absolute/path/to/pi npm test
+npm run check
 ```
 
-`npm test` validates the theme against the latest Pi, then checks the package manifest, all 55 saved colors, and the complete JSON snapshot. It requires Node.js 22.19 or newer for Pi 1.4.0. Use `npm run test:unit` for dependency-free snapshot tests on Node.js 18 or newer. Theme installation still needs no build step or runtime dependencies.
+`npm test` exercises the installed global Pi CLI, then checks the package manifest, tarball contents, all 55 saved colors, and the complete JSON snapshot. CLI tests require Python 3 and a POSIX PTY; they fail rather than skip when the supplied executable is missing. Use `npm run test:unit` for Pi-independent snapshot and packaging tests on Node.js 18 or newer. Theme installation still needs no build step or runtime dependencies.
 
 ## Pi compatibility and validation
 
@@ -52,16 +53,13 @@ Only the latest stable `@earendil-works/pi-coding-agent` release is a test targe
 
 Tested against Pi 1.4.0
 
-Validation used `@earendil-works/pi-coding-agent` 1.4.0 on Node.js 24.16.0. Automated checks cover the three package/palette snapshot tests, JavaScript syntax, and the packaged JSON through Pi's actual theme schema validator and theme loader. These are format/loading checks, not a visual check or an interactive Pi session. The saved theme JSON is unchanged.
+Validation used the supplied global Pi 1.4.0 executable on Node.js 26.7.0. `npm run test:e2e` (also `test:pi`, run automatically before `npm test`) explicitly loads this local package and a test-only observer into real interactive Pi sessions. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
 
-Installation still has no runtime dependencies. Pi 1.4.0 validation needs Node.js 22.19 or newer; `npm run test:unit` needs Node.js 18 or newer and no installed dependencies.
+The CLI suite checks explicit and settings-configured local package discovery, initial theme selection overriding a saved light theme without overwriting that setting, all 55 resolved colors, truecolor and 256-color rendering (including settings taking precedence over conflicting `PI_TRUE_COLOR` values in both directions), the omitted `scrollbarTrack` fallback, invalid-theme rejection, failed-selection recovery, switching themes, `/reload`, and `/new`. It runs regular and fullscreen terminal modes; a test-only themed status ensures the saved accent reaches actual terminal output even without a startup header. A mutated-palette negative control proves the observer detects incorrect runtime colors. The suite also checks that Pi does not set or reset the terminal's default background. It does not visually assess contrast, test HTML exports, or emulate every terminal.
 
-```sh
-npm test
-npm run check
-```
+Tests use isolated agent directories under ignored `tmp/`, offline startup, and no model requests or credentials. Provider/model/reasoning options honor `PI_EVERGREEN_E2E_PROVIDER`, `PI_EVERGREEN_E2E_MODEL`, and `PI_EVERGREEN_E2E_REASONING` (defaults: `openai`, `gpt-6-luna`, `medium`); no paid calls are necessary for a static theme. Temporary session data is removed after each run. The saved theme JSON is unchanged.
 
-`npm test` runs the latest-Pi validation automatically before the unit tests. Both `npm test` and standalone `npm run test:pi` refresh the temporary install with `--ignore-scripts`; no manual setup is needed. Install and registry calls have timeouts and failures stop the check. The validator verifies the installed version against npm's latest release. These commands need registry access and use Pi's internal validation entry points, which may change in a later release. This static JSON package has no TypeScript source or configured linter.
+No build, TypeScript application type check, or linter is configured; `npm run check` checks JavaScript and Python syntax. The test-only TypeScript observer is loaded by Pi itself. The validator checks the installed CLI version against this README's tested-version record; the maintenance environment is responsible for supplying the latest release.
 
 ## License
 
