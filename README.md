@@ -44,26 +44,24 @@ The file does not contain the browser's generator inputs or preview background, 
 npm test
 ```
 
-Tests check the package manifest, static color format, all 55 saved colors, and the complete JSON snapshot. Requires Node.js 18 or newer for tests. Installation needs no build step or runtime dependencies.
+`npm test` validates the theme against the latest Pi, then checks the package manifest, all 55 saved colors, and the complete JSON snapshot. It requires Node.js 22.19 or newer for Pi 1.4.0. Use `npm run test:unit` for dependency-free snapshot tests on Node.js 18 or newer. Theme installation still needs no build step or runtime dependencies.
 
 ## Pi compatibility and validation
 
 Only the latest stable `@earendil-works/pi-coding-agent` release is a test target. Older Pi versions are not part of the test policy. Before every release, resolve `@latest` again, rerun the checks below, and update this record with the exact version actually checked and any validation limits.
 
-Tested against Pi 1.4.0 using `@earendil-works/pi-coding-agent` on Node.js 24.16.0.
+Tested against Pi 1.4.0
 
-Automated checks cover the three package/palette snapshot tests, JavaScript syntax, and the packaged JSON through Pi's actual theme schema validator and theme loader. These are format/loading checks, not a visual check or an interactive Pi session. The saved theme JSON is unchanged.
+Validation used `@earendil-works/pi-coding-agent` 1.4.0 on Node.js 24.16.0. Automated checks cover the three package/palette snapshot tests, JavaScript syntax, and the packaged JSON through Pi's actual theme schema validator and theme loader. These are format/loading checks, not a visual check or an interactive Pi session. The saved theme JSON is unchanged.
 
-Installation still has no runtime dependencies. Pi 1.4.0 validation needs Node.js 22.19 or newer; the dependency-free snapshot tests need Node.js 18 or newer.
+Installation still has no runtime dependencies. Pi 1.4.0 validation needs Node.js 22.19 or newer; `npm run test:unit` needs Node.js 18 or newer and no installed dependencies.
 
 ```sh
-npm install --prefix tmp/pi-validation --no-save --package-lock=false @earendil-works/pi-coding-agent@latest
 npm test
 npm run check
-npm run test:pi
 ```
 
-The validator refuses a cached Pi install that no longer matches npm's latest release. It needs registry access and uses Pi's internal validation entry points, which may change in a later release. This static JSON package has no TypeScript source or configured linter.
+`npm test` runs the latest-Pi validation automatically before the unit tests. Both `npm test` and standalone `npm run test:pi` refresh the temporary install with `--ignore-scripts`; no manual setup is needed. Install and registry calls have timeouts and failures stop the check. The validator verifies the installed version against npm's latest release. These commands need registry access and use Pi's internal validation entry points, which may change in a later release. This static JSON package has no TypeScript source or configured linter.
 
 ## License
 

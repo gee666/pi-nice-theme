@@ -17,7 +17,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test",
+    "pretest": "npm run test:pi",
+    "test": "npm run test:unit",
+    "test:unit": "node --test",
     "test:pi": "node scripts/validate-pi.mjs",
     "check": "node --check scripts/validate-pi.mjs && node --check tests/theme.test.mjs"
   },
