@@ -41,11 +41,11 @@ The file does not contain the browser's generator inputs or preview background, 
 ## Test
 
 ```sh
-PI_EVERGREEN_PI_BIN=/absolute/path/to/pi npm test
+EVERGREEN_PI_BIN=/absolute/path/to/pi npm run test:evergreen
 npm run check
 ```
 
-`npm test` exercises the installed global Pi CLI, then checks the package manifest, tarball contents, all 55 saved colors, and the complete JSON snapshot. CLI tests require Python 3 and a POSIX PTY; they fail rather than skip when the supplied executable is missing. Use `npm run test:unit` for Pi-independent snapshot and packaging tests on Node.js 18 or newer. Theme installation still needs no build step or runtime dependencies.
+`npm run test:evergreen` runs unit, integration, and e2e tests; `npm test` also runs all three. Unit tests protect the exact saved bytes and all 55 colors. Integration tests pack and extract the real npm artifact, checking its resource declaration and excluding executable resources. E2E tests require `tar` and the globally installed Pi: `$EVERGREEN_PI_BIN`, or `pi` on PATH. A missing executable fails rather than skips. Use `npm run test:unit` and `npm run test:integration` for Pi-independent checks on Node.js 18 or newer. Theme installation still needs no build step or runtime dependencies.
 
 ## Pi compatibility and validation
 
@@ -53,13 +53,13 @@ Only the latest stable `@earendil-works/pi-coding-agent` release is a test targe
 
 Tested against Pi 1.4.0
 
-Validation used the supplied global Pi 1.4.0 executable on Node.js 26.7.0. `npm run test:e2e` (also `test:pi`, run automatically before `npm test`) explicitly loads this local package and a test-only observer into real interactive Pi sessions. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
+Validation used the supplied global Pi 1.4.0 executable on Node.js 26.7.0. `npm run test:e2e` (also `test:pi`) installs the extracted npm artifact into an isolated agent directory, verifies CLI listing and persisted discovery, and removes it afterward. A test-only command uses Pi's exported `DefaultResourceLoader` to check all 55 resolved colors, dark appearance, ANSI styling, the omitted `scrollbarTrack` fallback, invalid-theme rejection, and repeat resource loading. A mutated-palette negative control proves that runtime color drift is detected, then the restored artifact is checked again. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
 
-The CLI suite checks explicit and settings-configured local package discovery, initial theme selection overriding a saved light theme without overwriting that setting, all 55 resolved colors, truecolor and 256-color rendering (including settings taking precedence over conflicting `PI_TRUE_COLOR` values in both directions), the omitted `scrollbarTrack` fallback, invalid-theme rejection, failed-selection recovery, switching themes, `/reload`, and `/new`. It runs regular and fullscreen terminal modes; a test-only themed status ensures the saved accent reaches actual terminal output even without a startup header. A mutated-palette negative control proves the observer detects incorrect runtime colors. The suite also checks that Pi does not set or reset the terminal's default background. It does not visually assess contrast, test HTML exports, or emulate every terminal.
+Pi always runs with stdin ignored. Pi 1.4.0 therefore selects print mode, so these tests do not exercise interactive selection, `/reload`, `/new`, terminal-background preservation, truecolor capability negotiation, visual contrast, or HTML exports. Resource-loader reload is not an interactive `/reload` test.
 
-Tests use isolated agent directories under ignored `tmp/`, offline startup, and no model requests or credentials. Provider/model/reasoning options honor `PI_EVERGREEN_E2E_PROVIDER`, `PI_EVERGREEN_E2E_MODEL`, and `PI_EVERGREEN_E2E_REASONING` (defaults: `openai`, `gpt-6-luna`, `medium`); no paid calls are necessary for a static theme. Temporary session data is removed after each run. The saved theme JSON is unchanged.
+Tests use isolated agent directories under ignored `tmp/`, offline startup, and no model requests or credentials. `$EVERGREEN_E2E_MODEL` is passed to Pi's `--model` when supplied; no paid calls are needed for a static theme. Temporary session data is removed after each run. The saved theme JSON is unchanged.
 
-No build, TypeScript application type check, or linter is configured; `npm run check` checks JavaScript and Python syntax. The test-only TypeScript observer is loaded by Pi itself. The validator checks the installed CLI version against this README's tested-version record; the maintenance environment is responsible for supplying the latest release.
+No build, TypeScript application type check, or linter is configured; `npm run check` checks JavaScript syntax. The test-only TypeScript observer is loaded by Pi itself. The validator checks the installed CLI version against this README's tested-version record; the maintenance environment is responsible for supplying the latest release. See [EVERGREEN.md](EVERGREEN.md) for the maintenance map.
 
 ## License
 
