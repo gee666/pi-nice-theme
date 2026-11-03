@@ -29,7 +29,7 @@ Strict schema changes can reject the palette or introduce new required roles.
 Manifest/discovery changes can hide the theme; duplicate standalone copies can
 collide with its name. `scrollbarTrack` is omitted and inherits `muted`.
 Fixed colors intentionally do not adapt to terminal palettes or contrast needs.
-Ignored stdin forces print mode on Pi 1.4.0: interactive selection, terminal
+Ignored stdin forces print mode on Pi 1.5.0: interactive selection, terminal
 background behavior, capability negotiation, `/reload`, and `/new` are untested.
 HTML export and visual contrast are also outside automated coverage.
 
