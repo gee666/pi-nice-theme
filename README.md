@@ -51,11 +51,11 @@ npm run check
 
 Only the latest stable `@earendil-works/pi-coding-agent` release is a test target. Older Pi versions are not part of the test policy. Before every release, resolve `@latest` again, rerun the checks below, and update this record with the exact version actually checked and any validation limits.
 
-Tested against Pi 1.5.0
+Tested against Pi 1.5.1
 
-Validation used the supplied global Pi 1.5.0 executable on Node.js 26.7.0. `npm run test:e2e` (also `test:pi`) installs the extracted npm artifact into an isolated agent directory, verifies CLI listing and persisted discovery, and removes it afterward. A test-only command uses Pi's exported `DefaultResourceLoader` to check all 55 resolved colors, dark appearance, ANSI styling, the omitted `scrollbarTrack` fallback, invalid-theme rejection, and repeat resource loading. A mutated-palette negative control proves that runtime color drift is detected, then the restored artifact is checked again. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
+Validation used the supplied global Pi 1.5.1 executable on Node.js 26.7.0. `npm run test:e2e` (also `test:pi`) installs the extracted npm artifact into an isolated agent directory, verifies CLI listing and persisted discovery, and removes it afterward. A test-only command uses Pi's exported `DefaultResourceLoader` to check all 55 resolved colors, dark appearance, ANSI styling, the omitted `scrollbarTrack` fallback, invalid-theme rejection, and repeat resource loading. A mutated-palette negative control proves that runtime color drift is detected, then the restored artifact is checked again. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
 
-Pi always runs with stdin ignored. Pi 1.5.0 therefore selects print mode, so these tests do not exercise interactive selection, `/reload`, `/new`, terminal-background preservation, truecolor capability negotiation, visual contrast, or HTML exports. Resource-loader reload is not an interactive `/reload` test.
+Pi always runs with stdin ignored. Pi 1.5.1 therefore selects print mode, so these tests do not exercise interactive selection, `/reload`, `/new`, terminal-background preservation, truecolor capability negotiation, visual contrast, or HTML exports. Resource-loader reload is not an interactive `/reload` test.
 
 Tests use isolated agent directories under ignored `tmp/`, offline startup, and no model requests or credentials. `$EVERGREEN_E2E_MODEL` is passed to Pi's `--model` when supplied; no paid calls are needed for a static theme. Temporary session data is removed after each run. The saved theme JSON is unchanged.
 
