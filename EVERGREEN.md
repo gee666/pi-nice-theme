@@ -29,7 +29,9 @@ Strict schema changes can reject the palette or introduce new required roles.
 Manifest/discovery changes can hide the theme; duplicate standalone copies can
 collide with its name. `scrollbarTrack` is omitted and inherits `muted`.
 Fixed colors intentionally do not adapt to terminal palettes or contrast needs.
-Ignored stdin forces print mode on Pi 1.6.0: interactive selection, terminal
+Pi 1.6.1 defaults to the terminal-following `system` theme; users must select
+this fixed palette explicitly. First-time setup asks only about analytics.
+Ignored stdin forces print mode on Pi 1.6.1: interactive selection, terminal
 background behavior, capability negotiation, `/reload`, and `/new` are untested.
 HTML export and visual contrast are also outside automated coverage.
 
@@ -48,6 +50,8 @@ not merely JSON syntax. Loader reload is not the interactive `/reload` command.
 `$EVERGREEN_E2E_MODEL` is forwarded to `--model`; no model calls are needed.
 Tests isolate settings/sessions under `tmp/` and clean temporary runs afterward.
 Test only the latest stable Pi; README records the version actually tested.
+The README version assertion runs after runtime checks, so a stale record does
+not prevent validating a new Pi release before updating compatibility claims.
 
 ## Relevant changelog topics
 Theme schema and semantic roles; optional-role defaults; concrete color/style

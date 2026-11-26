@@ -11,7 +11,6 @@ const version = execFileSync(bin, ['--version'], {
   encoding: 'utf8', timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'],
 }).trim();
 const readme = readFileSync(`${root}README.md`, 'utf8');
-assert.ok(readme.includes(`Tested against Pi ${version}`), `Update README after testing Pi ${version}`);
 mkdirSync(`${root}tmp`, { recursive: true });
 const work = mkdtempSync(`${root}tmp/cli-test-`);
 try {
@@ -70,6 +69,7 @@ try {
   pi(['remove', source]);
   assert.ok(!pi(['list']).includes(source), 'CLI removal must remove the package');
   console.log(`Pi ${version}: packed install/list, resolved palette, rendering, reload, negative control and removal passed`);
+  assert.ok(readme.includes(`Tested against Pi ${version}`), `Update README after testing Pi ${version}`);
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
