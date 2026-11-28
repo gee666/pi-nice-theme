@@ -51,7 +51,7 @@ npm run check
 
 Only the latest stable `@earendil-works/pi-coding-agent` release is a test target. Older Pi versions are not part of the test policy. Before every release, resolve `@latest` again, rerun the checks below, and update this record with the exact version actually checked and any validation limits.
 
-Tested against Pi 1.6.1
+Tested against Pi 1.7.0
 
 Validation used the supplied global Pi 1.6.1 executable on Node.js 26.13.1. `npm run test:e2e` (also `test:pi`) installs the extracted npm artifact into an isolated agent directory, verifies CLI listing and persisted discovery, and removes it afterward. A test-only command uses Pi's exported `DefaultResourceLoader` to check all 55 resolved colors, dark appearance, ANSI styling, the omitted `scrollbarTrack` fallback, invalid-theme rejection, and repeat resource loading. A mutated-palette negative control proves that runtime color drift is detected, then the restored artifact is checked again. No Pi runtime is installed or downloaded, and no private Pi modules are imported.
 
